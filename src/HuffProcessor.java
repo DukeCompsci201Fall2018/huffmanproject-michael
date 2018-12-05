@@ -108,11 +108,12 @@ public class HuffProcessor {
 	}
 	
 	private void writeHead(HuffNode r, BitOutputStream o)
-	{
-	  if(r.myValue>0)
+	{ 
+	  if(r.myLeft==null && r.myRight==null)
 	  {
 	    o.writeBits(1, 1);
 	    o.writeBits(BITS_PER_WORD+1, r.myValue);
+	    return;
 	  }
 	  else
 	  {
