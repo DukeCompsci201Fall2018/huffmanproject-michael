@@ -160,11 +160,11 @@ public class HuffProcessor {
 	     HuffNode right = readHeader(i);
 	     return(new HuffNode(0,0, left, right));
 	   }
-	   if(b==1)
+	   else
 	   {
-	     return(new HuffNode(i.readBits(BITS_PER_WORD+1), 0, null, null));
+	     int nextInt = i.readBits(BITS_PER_WORD+1);
+	     return(new HuffNode(nextInt, 0, null, null));
 	   }
-	   return(new HuffNode(0,0,null,null));
 	}
 	
 	public void readCompressedBits(HuffNode r, BitInputStream i, BitOutputStream o)
@@ -179,18 +179,17 @@ public class HuffProcessor {
 	    }
 	    else
 	    {
-	      System.out.println(current);
 	      if(b==0)
 	        current=current.myLeft;
 	      else
 	        current=current.myRight;
-	      if(r.myLeft==null && r.myRight==null)
+	      if(current.myLeft==null && current.myRight==null)
 	      {
 	        if(current.myValue == PSEUDO_EOF)
 	          break;
 	        else
 	        {
-	          o.writeBits(1, current.myValue);
+	          o.writeBits(BITS_PER_WORD, current.myValue);
 	          current=r;
 	        }
 	      }
