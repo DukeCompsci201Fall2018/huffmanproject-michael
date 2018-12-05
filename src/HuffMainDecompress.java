@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.*;
 
 public class HuffMainDecompress {
 	public static void main(String[] args) {
