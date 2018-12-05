@@ -55,7 +55,7 @@ public class HuffProcessor {
 	  o.close();
 	}
 	
-	public int[] readCounting(BitInputStream i)
+	private int[] readCounting(BitInputStream i)
 	{
 	  int[] answer = new int[ALPH_SIZE+1];
 	  int b = i.readBits(BITS_PER_WORD);
@@ -68,13 +68,16 @@ public class HuffProcessor {
 	  return(answer);
 	}
 	
-	public HuffNode makeTreeCounting(int[] counting)
+	private HuffNode makeTreeCounting(int[] counting)
 	{
 	  PriorityQueue<HuffNode> pq = new PriorityQueue<HuffNode>();
-	  
 	  for(int i=0; i<counting.length; i++)
+	  {
 	    if(counting[i]!=0)
+	    {
 	      pq.add(new HuffNode(i, counting[i], null, null));
+	    }
+	  }
 	  while(pq.size()>1)
 	  {
 	    HuffNode left = pq.remove();
@@ -86,16 +89,16 @@ public class HuffProcessor {
 	  return(answer);
 	}
 	
-	public String[] makeCodesTree(HuffNode r)
+	private String[] makeCodesTree(HuffNode r)
 	{
 	  String[] codes = new String[ALPH_SIZE+1];
 	  ayuda(r, codes, "");
 	  return(codes);
 	}
 	
-	public void ayuda(HuffNode r, String[] codes, String path)
+	private void ayuda(HuffNode r, String[] codes, String path)
 	{
-	  if(r.myValue>0)
+	  if(r.myLeft==null && r.myRight==null)
 	  {
 	    codes[r.myValue] = path;
 	    return;
@@ -104,7 +107,7 @@ public class HuffProcessor {
 	  ayuda(r.myRight, codes, path+1);
 	}
 	
-	public void writeHead(HuffNode r, BitOutputStream o)
+	private void writeHead(HuffNode r, BitOutputStream o)
 	{
 	  if(r.myValue>0)
 	  {
@@ -119,15 +122,17 @@ public class HuffProcessor {
 	  }
 	}
 	
-	public void writeCompressed(String[] codes, BitInputStream i, BitOutputStream o)
+	private void writeCompressed(String[] codes, BitInputStream i, BitOutputStream o)
 	{
 	  int b = i.readBits(BITS_PER_WORD);
-	  while(b!=-1)
+	  while(b>-1)
 	  {
       String path = codes[b];
       o.writeBits(path.length(), Integer.parseInt(path, 2));
       b=i.readBits(BITS_PER_WORD);
 	  }
+	   String path = codes[PSEUDO_EOF];
+	   o.writeBits(path.length(), Integer.parseInt(path, 2));
 	}
 	
 	/**
@@ -149,7 +154,7 @@ public class HuffProcessor {
 	  o.close();
 	}
 	
-	public HuffNode readHeader(BitInputStream i)
+	private HuffNode readHeader(BitInputStream i)
 	{
 	  int b = i.readBits(1);
 	  if(b==-1)
@@ -167,7 +172,7 @@ public class HuffProcessor {
 	   }
 	}
 	
-	public void readCompressedBits(HuffNode r, BitInputStream i, BitOutputStream o)
+	private void readCompressedBits(HuffNode r, BitInputStream i, BitOutputStream o)
 	{
 	  HuffNode current = r;
 	  while(true)
