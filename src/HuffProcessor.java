@@ -1,4 +1,5 @@
 import java.util.PriorityQueue;
+import java.util.Arrays;
 
 /**
  * Although this class has a history of several years,
@@ -46,8 +47,20 @@ public class HuffProcessor {
 	public void compress(BitInputStream i, BitOutputStream o)
 	{
 	  int[] counting = readCounting(i);
+	  if(myDebugLevel==DEBUG_HIGH)
+	  {
+	    System.out.println(Arrays.toString(counting));
+	  }
 	  HuffNode r = makeTreeCounting(counting);
+	  if(myDebugLevel==DEBUG_HIGH)
+	  {
+	    System.out.println(r);
+	  }
 	  String[] codes = makeCodesTree(r);
+	  if(myDebugLevel==DEBUG_HIGH)
+	  {
+	    System.out.println(Arrays.toString(codes));
+	  }
 	  o.writeBits(BITS_PER_INT, HUFF_TREE);
 	  writeHead(r, o);
 	  i.reset();
@@ -151,6 +164,10 @@ public class HuffProcessor {
 	  if(allBits!=HUFF_TREE)
 	    throw new HuffException("Illegal header starting with:" + " " + allBits);
 	  HuffNode r = readHeader(i);
+	  if(myDebugLevel==DEBUG_HIGH)
+	  {
+	    System.out.println(r);
+	  }
 	  readCompressedBits(r, i, o);
 	  o.close();
 	}
